@@ -1,0 +1,316 @@
+html = r"""<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lezzet Durağı — Restoran Menüsü</title>
+<style>
+  :root{
+    --bg:#141210; --card:#1e1b18; --card2:#26221e; --accent:#e8a13c;
+    --accent2:#c47f1e; --text:#f2ede4; --muted:#a89f92; --green:#5cb85c; --red:#d9534f;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,sans-serif}
+  body{background:var(--bg);color:var(--text);min-height:100vh}
+  header{background:linear-gradient(135deg,#221d17,#181410);border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:10}
+  .header-in{max-width:900px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;flex-wrap:wrap;gap:8px}
+  .logo{font-size:24px;font-weight:800;color:var(--accent);letter-spacing:1px}
+  .badge{padding:5px 12px;border-radius:20px;font-size:13px;font-weight:700}
+  .open{background:#1d3a1d;color:#7dd87d;border:1px solid #3a6b3a}
+  .closed{background:#3a1d1d;color:#e08a8a;border:1px solid #6b3a3a}
+  nav{max-width:900px;margin:auto;display:flex;gap:8px;padding:10px 18px;flex-wrap:wrap}
+  nav a{color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:8px;font-size:14px;transition:.2s}
+  nav a:hover,nav a.act{background:var(--card2);color:var(--accent)}
+  main{max-width:900px;margin:auto;padding:24px 18px 60px}
+  .hero{text-align:center;padding:36px 10px 26px}
+  .hero h1{font-size:34px;color:var(--accent);margin-bottom:8px}
+  .hero p{color:var(--muted)}
+  .hours-box{background:var(--card);border:1px solid #35302a;border-radius:12px;padding:12px 20px;display:inline-block;margin-top:14px;font-size:15px}
+  .cat-title{margin:34px 0 14px;font-size:20px;color:var(--accent);border-left:4px solid var(--accent);padding-left:10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+  .item{background:var(--card);border:1px solid #35302a;border-radius:12px;padding:16px;transition:.2s}
+  .item:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .item.off{opacity:.45}
+  .item h3{font-size:17px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+  .price{color:var(--accent);font-weight:800;font-size:18px;white-space:nowrap}
+  .item p{color:var(--muted);font-size:13.5px;line-height:1.5}
+  .tag{font-size:11px;background:#2c2username7;background:#2c2722;border:1px solid #4a4238;color:var(--muted);padding:2px 8px;border-radius:10px;margin-left:8px}
+  .team{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+  .member{background:var(--card);border:1px solid #35302a;border-radius:12px;padding:20px;text-align:center}
+  .avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#1a150f;margin:0 auto 10px}
+  .member h4{margin-bottom:4px}
+  .member span{color:var(--muted);font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid #2c2722}
+  /* Panel */
+  .panel-wrap{max-width:700px;margin:40px auto;background:var(--card);border:1px solid #35302a;border-radius:14px;padding:28px}
+  .panel-wrap h2{color:var(--accent);margin-bottom:18px}
+  input,select,textarea{width:100%;padding:10px 12px;border-radius:8px;border:1px solid #4a4238;background:var(--card2);color:var(--text);font-size:14px;margin-bottom:10px}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:4px}
+  .btn{background:var(--accent);color:#1a150f;border:none;padding:10px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px;transition:.2s}
+  .btn:hover{background:var(--accent2)}
+  .btn.sec{background:#3a352e;color:var(--text)}
+  .btn.dng{background:var(--red);color:#fff;padding:6px 10px;font-size:12px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>*{flex:1;min-width:120px}
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}
+  th,td{padding:8px 6px;border-bottom:1px solid #35302a;text-align:left}
+  th{color:var(--muted);font-size:12px;text-transform:uppercase}
+  td input{padding:5px 8px;margin:0}
+  .msg{padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:14px}
+  .ok{background:#1d3a1d;color:#7dd87d;border:1px solid #3a6b3a}
+  .err{background:#3a1d1d;color:#e08a8a;border:1px solid #6b3a3a}
+  .hidden{display:none!important}
+  .tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+  .tabs button{background:var(--card2);color:var(--muted);border:1px solid #4a4238;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:13px}
+  .tabs button.on{background:var(--accent);color:#1a150f;font-weight:700;border-color:var(--accent)}
+  .logout{float:right;font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline}
+  .lock-link{position:fixed;bottom:16px;right:16px;background:var(--card2);border:1px solid #4a4238;color:var(--muted);width:44px;height:44px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;text-decoration:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-in">
+    <div class="logo">🍽️ Lezzet Durağı</div>
+    <div id="statusBadge" class="badge open">—</div>
+  </div>
+  <nav>
+    <a href="#anasayfa" data-nav="anasayfa">Menü</a>
+    <a href="#ekip" data-nav="ekip">Ekibimiz</a>
+    <a href="#iletisim" data-nav="iletisim">İletişim</a>
+    <a href="#panel" data-nav="panel" style="margin-left:auto">🔐 Panel</a>
+  </nav>
+</header>
+
+<main>
+  <!-- ANASAYFA -->
+  <section id="v-anasayfa">
+    <div class="hero">
+      <h1>Lezzet Durağı</h1>
+      <p>Geleneksel Türk mutfağı, ev yapımı lezzetler</p>
+      <div class="hours-box">🕒 Çalışma Saatleri: <b id="hoursText">—</b></div>
+    </div>
+    <div id="menuArea"></div>
+  </section>
+
+  <!-- EKIP -->
+  <section id="v-ekip" class="hidden">
+    <div class="hero"><h1>Ekibimiz</h1><p>Lezzetlerimizin arkasındaki insanlar</p></div>
+    <div class="team" id="teamArea"></div>
+  </section>
+
+  <!-- ILETISIM -->
+  <section id="v-iletisim" class="hidden">
+    <div class="hero"><h1>İletişim</h1></div>
+    <div class="panel-wrap" style="margin-top:0">
+      <p>📍 Atatürk Cad. No:42, Merkez</p><br>
+      <p>📞 0 (312) 000 00 00</p><br>
+      <p>✉️ info@lezzetduragi.com</p>
+    </div>
+  </section>
+
+  <!-- PANEL - LOGIN -->
+  <section id="v-login" class="hidden">
+    <div class="panel-wrap">
+      <h2>🔐 Yönetim Paneli Girişi</h2>
+      <div id="loginMsg"></div>
+      <form id="loginForm">
+        <label>Şifre</label>
+        <input type="password" id="passInput" placeholder="Panel şifrenizi girin" required>
+        <button class="btn" type="submit" style="width:100%">Giriş Yap</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- PANEL -->
+  <section id="v-panel" class="hidden">
+    <div class="panel-wrap">
+      <span class="logout" onclick="logout()">Çıkış yap</span>
+      <h2>⚙️ Yönetim Paneli</h2>
+      <div class="tabs">
+        <button class="on" onclick="showTab('yemekler',this)">Yemekler</button>
+        <button onclick="showTab('ekle',this)">Yemek Ekle</button>
+        <button onclick="showTab('saatler',this)">Açık Saatler</button>
+        <button onclick="showTab('sifre',this)">Şifre Değiştir</button>
+      </div>
+      <div id="tabMsg"></div>
+
+      <div id="tab-yemekler">
+        <table>
+          <thead><tr><th>Yemek</th><th>Kategori</th><th>Fiyat (₺)</th><th>Durum</th><th></th></tr></thead>
+          <tbody id="adminTable"></tbody>
+        </table>
+      </div>
+
+      <div id="tab-ekle" class="hidden">
+        <form id="addForm">
+          <label>Yemek Adı</label><input id="fName" required placeholder="örn. Mercimek Çorbası">
+          <div class="row">
+            <div><label>Fiyat (₺)</label><input id="fPrice" type="number" step="0.5" min="0" required placeholder="örn. 60"></div>
+            <div><label>Kategori</label>
+              <select id="fCat">
+                <option>Çorbalar</option><option>Ana Yemekler</option><option>Pilav & Bakliyat</option>
+                <option>Kebaplar</option><option>Tatlılar & Meyve</option><option>İçecekler</option>
+              </select>
+            </div>
+          </div>
+          <label>Açıklama</label><input id="fDesc" placeholder="örn. Tereyağlı, limonlu">
+          <button class="btn" type="submit">Ekle</button>
+        </form>
+      </div>
+
+      <div id="tab-saatler" class="hidden">
+        <form id="hoursForm">
+          <div class="row">
+            <div><label>Açılış Saati</label><input id="hOpen" type="time" required></div>
+            <div><label>Kapanış Saati</label><input id="hClose" type="time" required></div>
+          </div>
+          <button class="btn" type="submit">Kaydet</button>
+        </form>
+      </div>
+
+      <div id="tab-sifre" class="hidden">
+        <form id="passForm">
+          <label>Mevcut Şifre</label><input id="pOld" type="password" required>
+          <label>Yeni Şifre</label><input id="pNew" type="password" minlength="4" required>
+          <button class="btn" type="submit">Şifreyi Değiştir</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>© 2026 Lezzet Durağı — Tüm hakları saklıdır</footer>
+<a class="lock-link" href="#panel" title="Yönetim Paneli">🔐</a>
+
+<script>
+const LS_ITEMS='ld_items_v1', LS_SET='ld_set_v1';
+const DEFAULT_ITEMS=[
+  {name:"Mercimek Çorbası",cat:"Çorbalar",price:60,desc:"Tereyağlı, limonlu",on:true},
+  {name:"Ezogelin Çorbası",cat:"Çorbalar",price:65,desc:"Naneli, kırmızı biberli",on:true},
+  {name:"Tavuk Suyu Çorbası",cat:"Çorbalar",price:70,desc:"Şehriyeli, terbiyeli",on:true},
+  {name:"İskender",cat:"Kebaplar",price:220,desc:"Tereyağı, domates sosu, yoğurtlu",on:true},
+  {name:"Adana Kebap",cat:"Kebaplar",price:240,desc:"Acılı, közlenmiş biberli",on:true},
+  {name:"Tas Kebabı",cat:"Ana Yemekler",price:200,desc:"Düdüklüde pişmiş kuzu eti",on:true},
+  {name:"Zeytinyağlı Yaprak Sarma",cat:"Ana Yemekler",price:140,desc:"Limonlu, zeytinyağlı",on:true},
+  {name:"Güveç",cat:"Ana Yemekler",price:190,desc:"Taş fırında, sebzeli",on:true},
+  {name:"Pilav",cat:"Pilav & Bakliyat",price:60,desc:"Tane tane, tereyağlı",on:true},
+  {name:"Nohut",cat:"Pilav & Bakliyat",price:90,desc:"Etli nohut yemeği",on:true},
+  {name:"Kuru Fasulye",cat:"Pilav & Bakliyat",price:100,desc:"Pastırmalı, et suyuyla",on:true},
+  {name:"Meyve Tabağı",cat:"Tatlılar & Meyve",price:120,desc:"Mevsim meyveleriyle",on:true},
+  {name:"Sütlaç",cat:"Tatlılar & Meyve",price:70,desc:"Fırın sütlaç",on:true},
+  {name:"Baklava",cat:"Tatlılar & Meyve",price:90,desc:"Cevizli, 4 dilim",on:true},
+  {name:"Ayran",cat:"İçecekler",price:25,desc:"Yayık ayran, 1 lt",on:true},
+  {name:"Çay",cat:"İçecekler",price:15,desc:"Demli, ince belli bardak",on:true},
+];
+const TEAM=[
+  {n:"Ahmet Yılmaz",r:"Şef / Usta",i:"A"},
+  {n:"Mehmet Demir",r:"Aşçıbaşı",i:"M"},
+  {n:"Ayşe Kaya",r:"Garson",i:"A"},
+  {n:"Fatma Şahin",r:"Kasiyer",i:"F"},
+];
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+let items=load(LS_ITEMS,DEFAULT_ITEMS);
+let set=load(LS_SET,{pass:"1234",open:"09:00",close:"22:00"});
+let authed=sessionStorage.getItem('ld_auth')==='1';
+
+const CATS=["Çorbalar","Ana Yemekler","Pilav & Bakliyat","Kebaplar","Tatlılar & Meyve","İçecekler"];
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function fmt(p){return Number(p).toLocaleString('tr-TR',{minimumFractionDigits:Number(p)%1?2:0})+' ₺'}
+function isOpenNow(){
+  const n=new Date(),c=n.getHours()*60+n.getMinutes();
+  const[oh,om]=set.open.split(':').map(Number),[ch,cm]=set.close.split(':').map(Number);
+  return c>=oh*60+om && c<ch*60+cm;
+}
+function renderStatus(){
+  const b=document.getElementById('statusBadge');
+  const open=isOpenNow();
+  b.textContent=open?'● Şu An Açık':'● Şu An Kapalı';
+  b.className='badge '+(open?'open':'closed');
+  document.getElementById('hoursText').textContent=set.open+' - '+set.close;
+}
+function renderMenu(){
+  const area=document.getElementById('menuArea');let h='';
+  CATS.forEach(cat=>{
+    const its=items.filter(i=>i.cat===cat);
+    if(!its.length)return;
+    h+='<div class="cat-title">'+esc(cat)+'</div><div class="grid">';
+    its.forEach(i=>{
+      h+='<div class="item'+(i.on?'':' off')+'"><h3>'+esc(i.name)+(i.on?'':'<span class="tag">Tükendi</span>')+'<span class="price">'+fmt(i.price)+'</span></h3><p>'+esc(i.desc||'')+'</p></div>';
+    });
+    h+='</div>';
+  });
+  area.innerHTML=h;
+}
+function renderTeam(){
+  document.getElementById('teamArea').innerHTML=TEAM.map(t=>
+    '<div class="member"><div class="avatar">'+t.i+'</div><h4>'+t.n+'</h4><span>'+t.r+'</span></div>').join('');
+}
+function renderAdmin(){
+  const tb=document.getElementById('adminTable');
+  tb.innerHTML=items.map((i,x)=>
+    '<tr><td><b>'+esc(i.name)+'</b></td><td>'+esc(i.cat)+'</td>'
+    +'<td style="width:110px"><input type="number" step="0.5" value="'+i.price+'" onchange="updPrice('+x+',this.value)"></td>'
+    +'<td><button class="btn sec" style="padding:4px 10px;font-size:12px" onclick="toggleOn('+x+')">'+(i.on?'✓ Var':'✗ Tükendi')+'</button></td>'
+    +'<td><button class="btn dng" onclick="delItem('+x+')">Sil</button></td></tr>').join('');
+}
+function msg(id,txt,ok){document.getElementById(id).innerHTML='<div class="msg '+(ok?'ok':'err')+'">'+txt+'</div>';setTimeout(()=>{const e=document.getElementById(id);if(e)e.innerHTML=''},2500)}
+
+function route(){
+  let h=(location.hash||'#anasayfa').slice(1);
+  const views=['anasayfa','ekip','iletisim','login','panel'];
+  if(h==='panel')h=authed?'panel':'login';
+  if(!views.includes(h))h='anasayfa';
+  views.forEach(v=>document.getElementById('v-'+v).classList.toggle('hidden',v!==h));
+  document.querySelectorAll('[data-nav]').forEach(a=>a.classList.toggle('act',a.dataset.nav===h));
+  window.scrollTo(0,0);
+}
+function showTab(t,btn){
+  ['yemekler','ekle','saatler','sifre'].forEach(x=>document.getElementById('tab-'+x).classList.toggle('hidden',x!==t));
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  if(t==='saatler'){document.getElementById('hOpen').value=set.open;document.getElementById('hClose').value=set.close}
+}
+
+document.getElementById('loginForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  if(document.getElementById('passInput').value===set.pass){
+    authed=true;sessionStorage.setItem('ld_auth','1');
+    document.getElementById('passInput').value='';
+    renderAdmin();location.hash='#panel';route();
+  }else msg('loginMsg','Hatalı şifre!',false);
+});
+function logout(){authed=false;sessionStorage.removeItem('ld_auth');location.hash='#anasayfa';route()}
+
+document.getElementById('addForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  items.push({name:document.getElementById('fName').value.trim(),cat:document.getElementById('fCat').value,
+    price:parseFloat(document.getElementById('fPrice').value)||0,
+    desc:document.getElementById('fDesc').value.trim(),on:true});
+  save(LS_ITEMS,items);e.target.reset();
+  renderMenu();renderAdmin();msg('tabMsg','Yemek eklendi ✓',true);
+});
+function updPrice(x,v){items[x].price=parseFloat(v)||0;save(LS_ITEMS,items);renderMenu();msg('tabMsg','Fiyat güncellendi ✓',true)}
+function toggleOn(x){items[x].on=!items[x].on;save(LS_ITEMS,items);renderMenu();renderAdmin()}
+function delItem(x){if(confirm('"'+items[x].name+'" silinsin mi?')){items.splice(x,1);save(LS_ITEMS,items);renderMenu();renderAdmin()}}
+document.getElementById('hoursForm').addEventListener('submit',e=>{
+  e.preventDefault();set.open=document.getElementById('hOpen').value;set.close=document.getElementById('hClose').value;
+  save(LS_SET,set);renderStatus();msg('tabMsg','Çalışma saatleri kaydedildi ✓',true);
+});
+document.getElementById('passForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  if(document.getElementById('pOld').value!==set.pass)return msg('tabMsg','Mevcut şifre hatalı!',false);
+  set.pass=document.getElementById('pNew').value;save(LS_SET,set);e.target.reset();
+  msg('tabMsg','Şifre değiştirildi ✓',true);
+});
+
+window.addEventListener('hashchange',route);
+renderMenu();renderTeam();renderStatus();route();
+</script>
+</body>
+</html>"""
+import os
+os.makedirs('/mnt/agents/output', exist_ok=True)
+with open('/mnt/agents/output/restoran-menu.html','w',encoding='utf-8') as f:
+    f.write(html)
+print("OK, bytes:", len(html.encode('utf-8')))
